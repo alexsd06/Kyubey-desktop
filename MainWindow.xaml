@@ -1,0 +1,34 @@
+﻿<Window x:Class="QB_WPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:QB_WPF"
+        xmlns:gif="http://wpfanimatedgif.codeplex.com"
+        mc:Ignorable="d"
+        Title="QB" Height="200" Width="300" WindowStyle="None" AllowsTransparency="True" Topmost="True" LocationChanged="Window_LocationChanged" MouseLeftButtonDown="Window_MouseLeftButtonDown" MouseLeftButtonUp="Window_MouseLeftButtonUp" MouseEnter="Window_MouseEnter" MouseLeave="Window_MouseLeave">
+    <Window.Background>
+        <SolidColorBrush Opacity="0" Color="White"/>
+    </Window.Background>
+    <Grid>
+        <Image x:Name="img" gif:ImageBehavior.AnimatedSource="/QB_res/QB.gif" >
+            <Image.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="About the creators">
+                        <MenuItem Header="bilibili: haojiezhe12345; website: alexsd06" Click="MenuItem_Click"/>
+                        <MenuItem Header="Github Repo: haojiezhe12345; alexsd06" Click="MenuItem_Click_1"/>
+                    </MenuItem>
+                    <MenuItem x:Name="idleList" Header="Idle Action" GotFocus="MenuItem_GotFocus">
+                        <MenuItem/>
+                    </MenuItem>
+                    <MenuItem Header="Resize" Click="resize"/>
+                    <MenuItem Header="Open Folder (Custom GIFs)" Click="openFolder"/>
+                    <MenuItem x:Name="chkMute" Header="Mute" Click="mute" IsCheckable="True"/>
+                    <MenuItem Header="Exit" Click="exit"/>
+                </ContextMenu>
+            </Image.ContextMenu>
+        </Image>
+        <MediaElement x:Name="player" LoadedBehavior="Manual" MediaEnded="player_MediaEnded" Visibility="Hidden" MediaOpened="player_MediaOpened" />
+        <Grid x:Name="GridResize" Background="#55000000" Visibility="Hidden" />
+    </Grid>
+</Window>
