@@ -110,14 +110,14 @@ namespace QB_WPF
             File.Delete(datapath + "QB_res.zip");
 
             InitializeComponent();
-            string filePath = "location.dat";
+            string filePath = datapath+"location.dat";
             LocationData locationData = LocationFileManager.ReadLocationFromFile(filePath);
             if (locationData != null)
             {
                 int x = locationData.X, y = locationData.Y;
                 this.Top = x; this.Left = y;
             }
-            filePath = "size.dat";
+            filePath = datapath+"size.dat";
             locationData = LocationFileManager.ReadLocationFromFile(filePath);
             if (locationData != null)
             {
@@ -217,11 +217,12 @@ namespace QB_WPF
 
         private void exit(object sender, RoutedEventArgs e)
         {
-            string filePath = "location.dat";
+            string datapath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\QB-desktop\\";
+            string filePath = datapath + "location.dat";
             int x = (int)this.Top, y = (int)this.Left;
             LocationFileManager.SaveLocationToFile(x, y, filePath);
 
-            filePath = "size.dat";
+            filePath = datapath + "size.dat";
             x = (int)this.Width; y= (int)this.Height;
             LocationFileManager.SaveLocationToFile(x, y, filePath);
             Application.Current.Shutdown();
