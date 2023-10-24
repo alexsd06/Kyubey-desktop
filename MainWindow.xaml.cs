@@ -50,11 +50,11 @@ namespace QB_WPF
                     IFormatter formatter = new BinaryFormatter();
                     formatter.Serialize(fileStream, data);
                 }
-                Console.WriteLine("Location data saved to file.");
+                Console.WriteLine("Data saved to file.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error saving location data: " + ex.Message);
+                Console.WriteLine("Error saving data: " + ex.Message);
             }
         }
 
@@ -76,12 +76,65 @@ namespace QB_WPF
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error reading location data: " + ex.Message);
+                Console.WriteLine("Error reading data: " + ex.Message);
             }
 
             return data;
         }
     }
+
+    [Serializable]
+    public class AppSettings
+    {
+        public bool IsMuted { get; set; }
+    }
+
+    public class SettingsManager
+    {
+        public static void SaveMuteStatus(bool isMuted, string filePath)
+        {
+            AppSettings settings = new AppSettings { IsMuted = isMuted };
+
+            try
+            {
+                using (FileStream fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    IFormatter formatter = new BinaryFormatter();
+                    formatter.Serialize(fileStream, settings);
+                }
+                Console.WriteLine("Mute status saved to file.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error saving mute status: " + ex.Message);
+            }
+        }
+
+        public static bool ReadMuteStatus(string filePath)
+        {
+            AppSettings settings = null;
+
+            try
+            {
+                using (FileStream fileStream = new FileStream(filePath, FileMode.Open))
+                {
+                    IFormatter formatter = new BinaryFormatter();
+                    settings = (AppSettings)formatter.Deserialize(fileStream);
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                Console.WriteLine("File not found.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error reading mute status: " + ex.Message);
+            }
+
+            return settings != null ? settings.IsMuted : false;
+        }
+    }
+
     public partial class MainWindow : Window
     {
         string datapath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\QB-desktop\\";
@@ -110,6 +163,7 @@ namespace QB_WPF
             File.Delete(datapath + "QB_res.zip");
 
             InitializeComponent();
+
             string filePath = datapath+"location.dat";
             LocationData locationData = LocationFileManager.ReadLocationFromFile(filePath);
             if (locationData != null)
@@ -117,6 +171,7 @@ namespace QB_WPF
                 int x = locationData.X, y = locationData.Y;
                 this.Top = x; this.Left = y;
             }
+
             filePath = datapath+"size.dat";
             locationData = LocationFileManager.ReadLocationFromFile(filePath);
             if (locationData != null)
@@ -125,6 +180,10 @@ namespace QB_WPF
                 this.Width = x; this.Height = y;
             }
 
+            filePath = datapath + "mute.dat";
+            bool mute = SettingsManager.ReadMuteStatus(filePath);
+            player.IsMuted = mute;
+            chkMute.IsChecked = mute;
         }
 
         private Thread fadeWin { get; set; }
@@ -218,6 +277,7 @@ namespace QB_WPF
         private void exit(object sender, RoutedEventArgs e)
         {
             string datapath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\QB-desktop\\";
+
             string filePath = datapath + "location.dat";
             int x = (int)this.Top, y = (int)this.Left;
             LocationFileManager.SaveLocationToFile(x, y, filePath);
@@ -225,6 +285,11 @@ namespace QB_WPF
             filePath = datapath + "size.dat";
             x = (int)this.Width; y= (int)this.Height;
             LocationFileManager.SaveLocationToFile(x, y, filePath);
+
+            filePath = datapath + "mute.dat";
+            bool mute = player.IsMuted;
+            SettingsManager.SaveMuteStatus(mute, filePath);
+
             Application.Current.Shutdown();
         }
 
